@@ -1,0 +1,9 @@
+services:
+  proxy:
+    build: .
+    container_name: proxy-server
+    restart: always
+    environment:
+      - REDIS_URL=${REDIS_URL}
+    ports:
+      - "8000:8000"
