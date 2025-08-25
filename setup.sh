@@ -17,22 +17,6 @@ sudo apt update
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# Install PM2 globally
-sudo npm install -g pm2
-
-# Install project dependencies
-npm install
-
-# Build source code if build script exists
-if [ -f package.json ] && grep -q '"build"' package.json; then
-  npm run build
-fi
-
-# Start app with PM2
-pm2 start npm --name "proxy-server" -- start
-pm2 save
-pm2 startup systemd -u $USER --hp $HOME
-
 # Install Nginx
 sudo apt install -y nginx
 
@@ -105,5 +89,21 @@ fi
 
 # Setup auto-renewal
 sudo systemctl enable certbot.timer
+
+# Install PM2 globally
+sudo npm install -g pm2
+
+# Install project dependencies
+npm install
+
+# Build source code if build script exists
+if [ -f package.json ] && grep -q '"build"' package.json; then
+  npm run build
+fi
+
+# Start app with PM2 (non-blocking, non-interactive)
+pm2 start npm --name "proxy-server" -- start
+pm2 save
+pm2 startup systemd -u $USER --hp $HOME --no-daemon
 
 echo "Setup complete!"
